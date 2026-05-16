@@ -8,8 +8,7 @@ namespace RuleWay.ECommerce.Application.Services;
 
 public sealed class ProductService(IApplicationDbContext applicationDbContext) : IProductService
 {
-    public async Task<IReadOnlyList<ProductResponse>> GetAllAsync(
-        CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ProductResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var products = await applicationDbContext.Products
             .AsNoTracking()
@@ -20,14 +19,12 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         return products.Select(product => product.ToResponse()).ToList();
     }
 
-    public async Task<ProductResponse> GetByIdAsync(
-        int id,
-        CancellationToken cancellationToken = default)
+    public async Task<ProductResponse> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var product = await applicationDbContext.Products
             .AsNoTracking()
-            .Include(product => product.Category)
-            .FirstOrDefaultAsync(product => product.Id == id, cancellationToken);
+            .Include(currentProduct => currentProduct.Category)
+            .FirstOrDefaultAsync(currentProduct => currentProduct.Id == id, cancellationToken);
 
         if (product is null)
         {
@@ -37,11 +34,9 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         return product.ToResponse();
     }
 
-    public async Task<IReadOnlyList<ProductResponse>> FilterAsync(
-        ProductFilterRequest request,
-        CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ProductResponse>> FilterAsync(ProductFilterRequest request, CancellationToken cancellationToken = default)
     {
-        var query = applicationDbContext.Products
+        var productQuery = applicationDbContext.Products
             .AsNoTracking()
             .Include(product => product.Category)
             .AsQueryable();
@@ -50,7 +45,7 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         {
             var search = request.Search.Trim();
 
-            query = query.Where(product =>
+            productQuery = productQuery.Where(product =>
                 product.Title.Contains(search) ||
                 (product.Description != null && product.Description.Contains(search)) ||
                 (product.Category != null && product.Category.Name.Contains(search)));
@@ -58,26 +53,24 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
 
         if (request.MinStock.HasValue)
         {
-            query = query.Where(product =>
+            productQuery = productQuery.Where(product =>
                 product.StockQuantity >= request.MinStock.Value);
         }
 
         if (request.MaxStock.HasValue)
         {
-            query = query.Where(product =>
+            productQuery = productQuery.Where(product =>
                 product.StockQuantity <= request.MaxStock.Value);
         }
 
-        var products = await query
+        var products = await productQuery
             .OrderByDescending(product => product.CreatedAt)
             .ToListAsync(cancellationToken);
 
         return products.Select(product => product.ToResponse()).ToList();
     }
 
-    public async Task<ProductResponse> CreateAsync(
-        ProductRequest request,
-        CancellationToken cancellationToken = default)
+    public async Task<ProductResponse> CreateAsync(ProductRequest request, CancellationToken cancellationToken = default)
     {
         await ValidateProductCanBeLiveAsync(
             request.CategoryId,
@@ -99,7 +92,7 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         CancellationToken cancellationToken = default)
     {
         var product = await applicationDbContext.Products
-            .FirstOrDefaultAsync(product => product.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(currentProduct => currentProduct.Id == id, cancellationToken);
 
         if (product is null)
         {
@@ -124,12 +117,10 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         return await GetByIdAsync(product.Id, cancellationToken);
     }
 
-    public async Task DeleteAsync(
-        int id,
-        CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var product = await applicationDbContext.Products
-            .FirstOrDefaultAsync(product => product.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(currentProduct => currentProduct.Id == id, cancellationToken);
 
         if (product is null)
         {
@@ -160,7 +151,7 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
 
         var category = await applicationDbContext.Categories
             .AsNoTracking()
-            .FirstOrDefaultAsync(category => category.Id == categoryId, cancellationToken);
+            .FirstOrDefaultAsync(currentCategory => currentCategory.Id == categoryId, cancellationToken);
 
         if (category is null)
         {
