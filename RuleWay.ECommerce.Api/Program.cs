@@ -1,6 +1,7 @@
 using RuleWay.ECommerce.Api.Middlewares;
 using RuleWay.ECommerce.Application.Extensions;
 using RuleWay.ECommerce.Infrastructure.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
