@@ -8,7 +8,7 @@ public sealed class Product : AbstractAuditEntity
 
     public string? Description { get; set; }
 
-    public Guid? CategoryId { get; set; }
+    public int? CategoryId { get; set; }
 
     public Category? Category { get; set; }
 

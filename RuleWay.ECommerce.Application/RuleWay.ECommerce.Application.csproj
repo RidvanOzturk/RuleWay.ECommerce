@@ -11,14 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mappings\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Validators\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
   </ItemGroup>
 
