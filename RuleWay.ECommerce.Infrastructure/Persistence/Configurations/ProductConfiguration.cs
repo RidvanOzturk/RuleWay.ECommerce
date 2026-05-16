@@ -20,20 +20,15 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(product => product.StockQuantity)
             .IsRequired();
 
+        builder.Property(product => product.CategoryMinimumStockQuantity);
+
         builder.Property(product => product.IsLive)
-            .IsRequired();
+            .HasComputedColumnSql(
+                "CASE WHEN [CategoryId] IS NOT NULL AND [CategoryMinimumStockQuantity] IS NOT NULL AND [StockQuantity] >= [CategoryMinimumStockQuantity] THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END",
+                stored: false);
 
         builder.Property(product => product.CreatedAt)
             .IsRequired();
-
-        builder.Property(product => product.CreatedBy)
-            .HasMaxLength(100);
-
-        builder.Property(product => product.UpdatedBy)
-            .HasMaxLength(100);
-
-        builder.Property(product => product.DeletedBy)
-            .HasMaxLength(100);
 
         builder.HasOne(product => product.Category)
             .WithMany(category => category.Products)

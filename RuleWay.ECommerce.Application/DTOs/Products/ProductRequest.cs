@@ -4,5 +4,4 @@ public sealed record ProductRequest(
     string Title,
     string? Description,
     int? CategoryId,
-    int StockQuantity,
-    bool IsLive);
+    int StockQuantity);

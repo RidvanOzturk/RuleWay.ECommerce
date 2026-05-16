@@ -24,7 +24,7 @@ public interface IProductService
         ProductRequest request,
         CancellationToken cancellationToken = default);
 
-    Task DeleteAsync(
+    Task<bool> DeleteAsync(
         int id,
         CancellationToken cancellationToken = default);
 }

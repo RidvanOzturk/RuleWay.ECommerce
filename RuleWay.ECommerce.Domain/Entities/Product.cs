@@ -2,7 +2,7 @@
 
 namespace RuleWay.ECommerce.Domain.Entities;
 
-public sealed class Product : AbstractAuditEntity
+public sealed class Product : AuditEntity
 {
     public string Title { get; set; } = default!;
 
@@ -14,5 +14,7 @@ public sealed class Product : AbstractAuditEntity
 
     public int StockQuantity { get; set; }
 
-    public bool IsLive { get; set; }
+    public int? CategoryMinimumStockQuantity { get; set; }
+
+    public bool IsLive { get; private set; }
 }

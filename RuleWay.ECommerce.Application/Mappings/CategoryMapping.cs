@@ -25,8 +25,7 @@ public static class CategoryMapping
             return new Category
             {
                 Name = request.Name.Trim(),
-                MinimumStockQuantity = request.MinimumStockQuantity,
-                CreatedAt = DateTime.UtcNow
+                MinimumStockQuantity = request.MinimumStockQuantity
             };
         }
     }

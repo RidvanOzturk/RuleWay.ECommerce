@@ -18,7 +18,9 @@ public sealed class CategoryService(IApplicationDbContext applicationDbContext) 
         return categories.Select(category => category.ToResponse()).ToList();
     }
 
-    public async Task<CategoryResponse> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<CategoryResponse> GetByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default)
     {
         var category = await applicationDbContext.Categories
             .AsNoTracking()
@@ -32,7 +34,9 @@ public sealed class CategoryService(IApplicationDbContext applicationDbContext) 
         return category.ToResponse();
     }
 
-    public async Task<CategoryResponse> CreateAsync(CategoryRequest request, CancellationToken cancellationToken = default)
+    public async Task<CategoryResponse> CreateAsync(
+        CategoryRequest request,
+        CancellationToken cancellationToken = default)
     {
         var categoryName = request.Name.Trim();
 
@@ -82,37 +86,31 @@ public sealed class CategoryService(IApplicationDbContext applicationDbContext) 
             throw new BusinessRuleException("Category already exists.");
         }
 
-        var hasInvalidLiveProducts = await applicationDbContext.Products
-            .AsNoTracking()
-            .AnyAsync(existingProduct =>
-                    existingProduct.CategoryId == id &&
-                    existingProduct.IsLive &&
-                    existingProduct.StockQuantity < request.MinimumStockQuantity,
-                cancellationToken);
-
-        if (hasInvalidLiveProducts)
-        {
-            throw new BusinessRuleException(
-                "Category minimum stock quantity cannot be updated because some live products would become invalid.");
-        }
-
         category.Name = categoryName;
         category.MinimumStockQuantity = request.MinimumStockQuantity;
-        category.UpdatedAt = DateTime.UtcNow;
+
+        var relatedProducts = await applicationDbContext.Products
+            .Where(relatedProduct => relatedProduct.CategoryId == id)
+            .ToListAsync(cancellationToken);
+
+        foreach (var relatedProduct in relatedProducts)
+        {
+            relatedProduct.CategoryMinimumStockQuantity = request.MinimumStockQuantity;
+        }
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
 
         return category.ToResponse();
     }
 
-    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var category = await applicationDbContext.Categories
             .FirstOrDefaultAsync(currentCategory => currentCategory.Id == id, cancellationToken);
 
         if (category is null)
         {
-            throw new NotFoundException("Category not found.");
+            return false;
         }
 
         var hasProducts = await applicationDbContext.Products
@@ -125,9 +123,10 @@ public sealed class CategoryService(IApplicationDbContext applicationDbContext) 
                 "Category cannot be deleted because it has related products.");
         }
 
-        category.IsDeleted = true;
-        category.DeletedAt = DateTime.UtcNow;
+        applicationDbContext.Categories.Remove(category);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 }

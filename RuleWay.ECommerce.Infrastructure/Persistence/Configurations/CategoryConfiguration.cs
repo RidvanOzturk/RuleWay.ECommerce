@@ -20,15 +20,6 @@ public sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(category => category.CreatedAt)
             .IsRequired();
 
-        builder.Property(category => category.CreatedBy)
-            .HasMaxLength(100);
-
-        builder.Property(category => category.UpdatedBy)
-            .HasMaxLength(100);
-
-        builder.Property(category => category.DeletedBy)
-            .HasMaxLength(100);
-
         builder.HasQueryFilter(category => !category.IsDeleted);
     }
 }

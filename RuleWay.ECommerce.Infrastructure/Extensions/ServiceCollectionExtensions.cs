@@ -12,14 +12,11 @@ public static class ServiceCollectionExtensions
     {
         public IServiceCollection AddInfrastructure(IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"));
             });
-
-            services.AddScoped<IApplicationDbContext>(provider =>
-                provider.GetRequiredService<ApplicationDbContext>());
 
             return services;
         }

@@ -19,7 +19,9 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         return products.Select(product => product.ToResponse()).ToList();
     }
 
-    public async Task<ProductResponse> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<ProductResponse> GetByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default)
     {
         var product = await applicationDbContext.Products
             .AsNoTracking()
@@ -72,13 +74,12 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
 
     public async Task<ProductResponse> CreateAsync(ProductRequest request, CancellationToken cancellationToken = default)
     {
-        await ValidateProductCanBeLiveAsync(
+        var categoryMinimumStockQuantity = await GetCategoryMinimumStockQuantityAsync(
             request.CategoryId,
-            request.StockQuantity,
-            request.IsLive,
             cancellationToken);
 
         var product = request.ToEntity();
+        product.CategoryMinimumStockQuantity = categoryMinimumStockQuantity;
 
         await applicationDbContext.Products.AddAsync(product, cancellationToken);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
@@ -99,54 +100,43 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
             throw new NotFoundException("Product not found.");
         }
 
-        await ValidateProductCanBeLiveAsync(
+        var categoryMinimumStockQuantity = await GetCategoryMinimumStockQuantityAsync(
             request.CategoryId,
-            request.StockQuantity,
-            request.IsLive,
             cancellationToken);
 
         product.Title = request.Title.Trim();
         product.Description = request.Description?.Trim();
         product.CategoryId = request.CategoryId;
         product.StockQuantity = request.StockQuantity;
-        product.IsLive = request.IsLive;
-        product.UpdatedAt = DateTime.UtcNow;
+        product.CategoryMinimumStockQuantity = categoryMinimumStockQuantity;
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
 
         return await GetByIdAsync(product.Id, cancellationToken);
     }
 
-    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var product = await applicationDbContext.Products
             .FirstOrDefaultAsync(currentProduct => currentProduct.Id == id, cancellationToken);
 
         if (product is null)
         {
-            throw new NotFoundException("Product not found.");
+            return false;
         }
 
-        product.IsDeleted = true;
-        product.DeletedAt = DateTime.UtcNow;
+        applicationDbContext.Products.Remove(product);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 
-    private async Task ValidateProductCanBeLiveAsync(
-        int? categoryId,
-        int stockQuantity,
-        bool isLive,
-        CancellationToken cancellationToken)
+    private async Task<int?> GetCategoryMinimumStockQuantityAsync(int? categoryId, CancellationToken cancellationToken)
     {
-        if (!isLive)
-        {
-            return;
-        }
-
         if (categoryId is null)
         {
-            throw new BusinessRuleException("Product must have a category to be live.");
+            return null;
         }
 
         var category = await applicationDbContext.Categories
@@ -158,10 +148,6 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
             throw new NotFoundException("Category not found.");
         }
 
-        if (stockQuantity < category.MinimumStockQuantity)
-        {
-            throw new BusinessRuleException(
-                "Product cannot be live because its stock quantity is below the category minimum stock quantity.");
-        }
+        return category.MinimumStockQuantity;
     }
 }

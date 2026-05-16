@@ -33,17 +33,8 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -59,10 +50,6 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
@@ -72,7 +59,6 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "Seed",
                             IsDeleted = false,
                             MinimumStockQuantity = 10,
                             Name = "Electronics"
@@ -81,7 +67,6 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "Seed",
                             IsDeleted = false,
                             MinimumStockQuantity = 5,
                             Name = "Books"
@@ -99,20 +84,14 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CategoryMinimumStockQuantity")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -122,7 +101,9 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsLive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bit")
+                        .HasComputedColumnSql("CASE WHEN [CategoryId] IS NOT NULL AND [CategoryMinimumStockQuantity] IS NOT NULL AND [StockQuantity] >= [CategoryMinimumStockQuantity] THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END", false);
 
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
@@ -135,10 +116,6 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -150,11 +127,11 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
+                            CategoryMinimumStockQuantity = 10,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "Seed",
                             Description = "Apple smartphone",
                             IsDeleted = false,
-                            IsLive = true,
+                            IsLive = false,
                             StockQuantity = 20,
                             Title = "iPhone 15"
                         },
@@ -162,11 +139,11 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
+                            CategoryMinimumStockQuantity = 5,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            CreatedBy = "Seed",
                             Description = "Software development book",
                             IsDeleted = false,
-                            IsLive = true,
+                            IsLive = false,
                             StockQuantity = 8,
                             Title = "Clean Code"
                         });

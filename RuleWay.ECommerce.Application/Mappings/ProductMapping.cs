@@ -17,7 +17,7 @@ public static class ProductMapping
                 product.IsLive,
                 product.CategoryId,
                 product.Category?.Name,
-                product.Category?.MinimumStockQuantity,
+                product.CategoryMinimumStockQuantity,
                 product.CreatedAt,
                 product.UpdatedAt);
         }
@@ -32,9 +32,7 @@ public static class ProductMapping
                 Title = request.Title.Trim(),
                 Description = request.Description?.Trim(),
                 CategoryId = request.CategoryId,
-                StockQuantity = request.StockQuantity,
-                IsLive = request.IsLive,
-                CreatedAt = DateTime.UtcNow
+                StockQuantity = request.StockQuantity
             };
         }
     }

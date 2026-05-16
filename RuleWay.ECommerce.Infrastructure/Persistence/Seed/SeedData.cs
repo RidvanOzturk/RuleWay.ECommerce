@@ -13,16 +13,14 @@ public static class SeedData
                 Id = 1,
                 Name = "Electronics",
                 MinimumStockQuantity = 10,
-                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                CreatedBy = "Seed"
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             },
             new Category
             {
                 Id = 2,
                 Name = "Books",
                 MinimumStockQuantity = 5,
-                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                CreatedBy = "Seed"
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );
 
@@ -33,10 +31,9 @@ public static class SeedData
                 Title = "iPhone 15",
                 Description = "Apple smartphone",
                 CategoryId = 1,
+                CategoryMinimumStockQuantity = 10,
                 StockQuantity = 20,
-                IsLive = true,
-                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                CreatedBy = "Seed"
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             },
             new Product
             {
@@ -44,10 +41,9 @@ public static class SeedData
                 Title = "Clean Code",
                 Description = "Software development book",
                 CategoryId = 2,
+                CategoryMinimumStockQuantity = 5,
                 StockQuantity = 8,
-                IsLive = true,
-                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                CreatedBy = "Seed"
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );
     }

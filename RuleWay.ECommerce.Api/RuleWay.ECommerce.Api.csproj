@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\RuleWay.ECommerce.Application\RuleWay.ECommerce.Application.csproj" />
     <ProjectReference Include="..\RuleWay.ECommerce.Infrastructure\RuleWay.ECommerce.Infrastructure.csproj" />
   </ItemGroup>

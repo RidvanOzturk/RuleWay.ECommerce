@@ -21,13 +21,10 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     MinimumStockQuantity = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,14 +41,12 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
                     StockQuantity = table.Column<int>(type: "int", nullable: false),
-                    IsLive = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CategoryMinimumStockQuantity = table.Column<int>(type: "int", nullable: true),
+                    IsLive = table.Column<bool>(type: "bit", nullable: false, computedColumnSql: "CASE WHEN [CategoryId] IS NOT NULL AND [CategoryMinimumStockQuantity] IS NOT NULL AND [StockQuantity] >= [CategoryMinimumStockQuantity] THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END", stored: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,20 +61,20 @@ namespace RuleWay.ECommerce.Infrastructure.Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "IsDeleted", "MinimumStockQuantity", "Name", "UpdatedAt", "UpdatedBy" },
+                columns: new[] { "Id", "CreatedAt", "DeletedAt", "IsDeleted", "MinimumStockQuantity", "Name", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Seed", null, null, false, 10, "Electronics", null, null },
-                    { 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Seed", null, null, false, 5, "Books", null, null }
+                    { 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, false, 10, "Electronics", null },
+                    { 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, false, 5, "Books", null }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "CreatedAt", "CreatedBy", "DeletedAt", "DeletedBy", "Description", "IsDeleted", "IsLive", "StockQuantity", "Title", "UpdatedAt", "UpdatedBy" },
+                columns: new[] { "Id", "CategoryId", "CategoryMinimumStockQuantity", "CreatedAt", "DeletedAt", "Description", "IsDeleted", "StockQuantity", "Title", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Seed", null, null, "Apple smartphone", false, true, 20, "iPhone 15", null, null },
-                    { 2, 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Seed", null, null, "Software development book", false, true, 8, "Clean Code", null, null }
+                    { 1, 1, 10, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Apple smartphone", false, 20, "iPhone 15", null },
+                    { 2, 2, 5, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, "Software development book", false, 8, "Clean Code", null }
                 });
 
             migrationBuilder.CreateIndex(

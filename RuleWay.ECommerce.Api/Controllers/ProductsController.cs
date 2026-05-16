@@ -7,6 +7,7 @@ namespace RuleWay.ECommerce.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
 public sealed class ProductsController(
     IProductService productService,
     IValidator<ProductRequest> productRequestValidator,
@@ -14,8 +15,8 @@ public sealed class ProductsController(
     : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-        CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyList<ProductResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var products = await productService.GetAllAsync(cancellationToken);
 
@@ -23,9 +24,9 @@ public sealed class ProductsController(
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(
-        int id,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         var product = await productService.GetByIdAsync(id, cancellationToken);
 
@@ -33,9 +34,9 @@ public sealed class ProductsController(
     }
 
     [HttpGet("filter")]
-    public async Task<IActionResult> Filter(
-        [FromQuery] ProductFilterRequest request,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyList<ProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Filter([FromQuery] ProductFilterRequest request, CancellationToken cancellationToken)
     {
         var validationResult = await productFilterRequestValidator.ValidateAsync(
             request,
@@ -52,13 +53,12 @@ public sealed class ProductsController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(
-        [FromBody] ProductRequest request,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Create([FromBody] ProductRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await productRequestValidator.ValidateAsync(
-            request,
-            cancellationToken);
+        var validationResult = await productRequestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
@@ -74,34 +74,37 @@ public sealed class ProductsController(
     }
 
     [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         int id,
         [FromBody] ProductRequest request,
         CancellationToken cancellationToken)
     {
-        var validationResult = await productRequestValidator.ValidateAsync(
-            request,
-            cancellationToken);
+        var validationResult = await productRequestValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors);
         }
 
-        var product = await productService.UpdateAsync(
-            id,
-            request,
-            cancellationToken);
+        var product = await productService.UpdateAsync(id, request, cancellationToken);
 
         return Ok(product);
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(
-        int id,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        await productService.DeleteAsync(id, cancellationToken);
+        var isDeleted = await productService.DeleteAsync(id, cancellationToken);
+
+        if (!isDeleted)
+        {
+            return NotFound();
+        }
 
         return NoContent();
     }
