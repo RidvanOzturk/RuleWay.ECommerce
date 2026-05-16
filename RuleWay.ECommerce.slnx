@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="RuleWay.ECommerce.Api/RuleWay.ECommerce.Api.csproj" />
+  <Project Path="RuleWay.ECommerce.Application/RuleWay.ECommerce.Application.csproj" />
+  <Project Path="RuleWay.ECommerce.Domain/RuleWay.ECommerce.Domain.csproj" />
+  <Project Path="RuleWay.ECommerce.Infrastructure/RuleWay.ECommerce.Infrastructure.csproj" />
 </Solution>
