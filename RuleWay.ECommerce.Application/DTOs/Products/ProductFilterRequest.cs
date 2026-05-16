@@ -2,5 +2,5 @@
 
 public sealed record ProductFilterRequest(
     string? Search,
-    int? MinStockQuantity,
-    int? MaxStockQuantity);
+    int? MinStock,
+    int? MaxStock);

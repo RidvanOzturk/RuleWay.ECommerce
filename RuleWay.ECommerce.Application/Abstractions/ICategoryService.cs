@@ -15,6 +15,11 @@ public interface ICategoryService
         CategoryRequest request,
         CancellationToken cancellationToken = default);
 
+    Task<CategoryResponse> UpdateAsync(
+        int id,
+        CategoryRequest request,
+        CancellationToken cancellationToken = default);
+
     Task DeleteAsync(
         int id,
         CancellationToken cancellationToken = default);

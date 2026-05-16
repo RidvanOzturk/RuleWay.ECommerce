@@ -56,16 +56,16 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
                 (product.Category != null && product.Category.Name.Contains(search)));
         }
 
-        if (request.MinStockQuantity.HasValue)
+        if (request.MinStock.HasValue)
         {
             query = query.Where(product =>
-                product.StockQuantity >= request.MinStockQuantity.Value);
+                product.StockQuantity >= request.MinStock.Value);
         }
 
-        if (request.MaxStockQuantity.HasValue)
+        if (request.MaxStock.HasValue)
         {
             query = query.Where(product =>
-                product.StockQuantity <= request.MaxStockQuantity.Value);
+                product.StockQuantity <= request.MaxStock.Value);
         }
 
         var products = await query

@@ -7,19 +7,19 @@ public sealed class ProductFilterRequestValidator : AbstractValidator<ProductFil
 {
     public ProductFilterRequestValidator()
     {
-        RuleFor(filter => filter.MinStockQuantity)
+        RuleFor(filter => filter.MinStock)
             .GreaterThanOrEqualTo(0)
-            .When(filter => filter.MinStockQuantity.HasValue);
+            .When(filter => filter.MinStock.HasValue);
 
-        RuleFor(filter => filter.MaxStockQuantity)
+        RuleFor(filter => filter.MaxStock)
             .GreaterThanOrEqualTo(0)
-            .When(filter => filter.MaxStockQuantity.HasValue);
+            .When(filter => filter.MaxStock.HasValue);
 
         RuleFor(filter => filter)
             .Must(filter =>
-                !filter.MinStockQuantity.HasValue ||
-                !filter.MaxStockQuantity.HasValue ||
-                filter.MinStockQuantity.Value <= filter.MaxStockQuantity.Value)
-            .WithMessage("Minimum stock quantity cannot be greater than maximum stock quantity.");
+                !filter.MinStock.HasValue ||
+                !filter.MaxStock.HasValue ||
+                filter.MinStock.Value <= filter.MaxStock.Value)
+            .WithMessage("Minimum stock cannot be greater than maximum stock.");
     }
 }
