@@ -1,0 +1,6 @@
+@RuleWay.ECommerce.Api_HostAddress = http://localhost:5185
+
+GET {{RuleWay.ECommerce.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
