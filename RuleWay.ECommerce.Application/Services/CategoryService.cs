@@ -103,14 +103,14 @@ public sealed class CategoryService(IApplicationDbContext applicationDbContext) 
         return category.ToResponse();
     }
 
-    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var category = await applicationDbContext.Categories
             .FirstOrDefaultAsync(currentCategory => currentCategory.Id == id, cancellationToken);
 
         if (category is null)
         {
-            return false;
+            return;
         }
 
         var hasProducts = await applicationDbContext.Products
@@ -126,7 +126,5 @@ public sealed class CategoryService(IApplicationDbContext applicationDbContext) 
         applicationDbContext.Categories.Remove(category);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
-
-        return true;
     }
 }

@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RuleWay.ECommerce.Application.Abstractions;
 using RuleWay.ECommerce.Application.DTOs.Categories;
 
@@ -8,10 +7,7 @@ namespace RuleWay.ECommerce.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-public sealed class CategoriesController(
-    ICategoryService categoryService,
-    IValidator<CategoryRequest> categoryRequestValidator)
-    : ControllerBase
+public sealed class CategoriesController(ICategoryService categoryService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<CategoryResponse>), StatusCodes.Status200OK)]
@@ -37,13 +33,6 @@ public sealed class CategoriesController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CategoryRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await categoryRequestValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
         var category = await categoryService.CreateAsync(request, cancellationToken);
 
         return CreatedAtAction(
@@ -61,22 +50,16 @@ public sealed class CategoriesController(
         [FromBody] CategoryRequest request,
         CancellationToken cancellationToken)
     {
-        var validationResult = await categoryRequestValidator.ValidateAsync(request, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
-        var category = await categoryService.UpdateAsync(id, request, cancellationToken);
+        var category = await categoryService.UpdateAsync(
+            id,
+            request,
+            cancellationToken);
 
         return Ok(category);
     }
 
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         await categoryService.DeleteAsync(id, cancellationToken);

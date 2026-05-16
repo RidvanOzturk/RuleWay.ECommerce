@@ -115,21 +115,19 @@ public sealed class ProductService(IApplicationDbContext applicationDbContext) :
         return await GetByIdAsync(product.Id, cancellationToken);
     }
 
-    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var product = await applicationDbContext.Products
             .FirstOrDefaultAsync(currentProduct => currentProduct.Id == id, cancellationToken);
 
         if (product is null)
         {
-            return false;
+            return;
         }
 
         applicationDbContext.Products.Remove(product);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
-
-        return true;
     }
 
     private async Task<int?> GetCategoryMinimumStockQuantityAsync(int? categoryId, CancellationToken cancellationToken)

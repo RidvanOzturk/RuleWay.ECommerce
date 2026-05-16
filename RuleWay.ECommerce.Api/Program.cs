@@ -1,11 +1,15 @@
 using RuleWay.ECommerce.Api.Middlewares;
+using RuleWay.ECommerce.Api.Filters;
 using RuleWay.ECommerce.Application.Extensions;
 using RuleWay.ECommerce.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<FluentValidationFilter>();
+});
 
 builder.Services.AddOpenApi();
 

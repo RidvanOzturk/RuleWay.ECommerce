@@ -20,7 +20,7 @@ public interface ICategoryService
         CategoryRequest request,
         CancellationToken cancellationToken = default);
 
-    Task<bool> DeleteAsync(
+    Task DeleteAsync(
         int id,
         CancellationToken cancellationToken = default);
 }
